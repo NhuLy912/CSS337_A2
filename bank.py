@@ -7,7 +7,7 @@ def SHA_256(student_id):
   return k_wallet
 
 def EMD():
-  emd = "D8D9752ED5CCCB9F460FB8D6EB86A984"
+  emd = "F27FBB631394F6A1D47046B77C81C0FD"
   k = "CF959C7BFC4FB5792AA25457578EF9E8B78E3558A8B7BF6A92338397B5F4639D"
   decipher = AES.new(bytes.fromhex(k), AES.MODE_ECB)
   result = decipher.decrypt(bytes.fromhex(emd)).hex()
