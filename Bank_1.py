@@ -1,5 +1,5 @@
 # -----------------------------------------------------------
-# CONTRIBUTORS:			Sherry Ly, Ye Eun Chae
+# CONTRIBUTORS:			Nhu (Sherry) Ly, Ye Eun Chae
 # DATE:					03/25/2019
 # COURSE:				css 337
 # DESCRIPTION:			Wallet Application  
