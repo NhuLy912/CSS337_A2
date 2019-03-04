@@ -11,7 +11,7 @@ from wallet import Wallet
 
 class Bank:
 	def __init__(self):
-		self.KBank = 0
+		self.KBank = "F25D58A0E3E4436EC646B58B1C194C6B505AB1CB6B9DE66C894599222F07B893"
 		self.wallets = []
 		self.wallet_a = None
 		self.wallet_b = None 
@@ -100,7 +100,14 @@ class Bank:
 	# synchronizing_wallet()- method for syncing two wallets 
 	#------------------------------------------------------------
 	def synchronizing_wallet(self):
-		print("Syncing two wallets...")
+		receiver = input("Receiver wallet id: ")
+		sender = self.check_length(self.wallet_a.ID)
+		receiver = self.check_length(receiver)
+		amount = "00000000"
+		counter = "00000000"
+		info = sender + receiver + amount + counter
+		token = self.encrypt_token(info)
+		print("Your token: ", token)
 
 	# -----------------------------------------------------------
 	# receiving_funds()- method for sending funds to another wallet 
@@ -133,22 +140,9 @@ class Bank:
 	# encrypt_token()- encrypts given token using AES.MODE_ECB
 	#------------------------------------------------------------
 	def encrypt_token(self):
-		#WID_A = input("Sender WID: ")
-		#WID_B = input("Receiver WID: ")
-		#amount = input("Amount: ")
-		#counter = input("Counter: ")
-
-		k_bank = "F25D58A0E3E4436EC646B58B1C194C6B505AB1CB6B9DE66C894599222F07B893"
-		info = "00000444000003330000002100000001"
-
-		cipher = AES.new(bytes.fromhex(k_bank), AES.MODE_ECB)
-		result1 = cipher.encrypt(bytes.fromhex(info)).hex()
-		print(result1)
-		#WID_A = check_length(WID_A)
-		#WID_B = check_length(WID_B)
-		#amount = check_length(amount)
-		#counter = check_length(counter)  
-		#print(WID_A + WID_B + amount + counter) 
+		cipher = AES.new(bytes.fromhex(self.KBank), AES.MODE_ECB)
+		token = cipher.encrypt(bytes.fromhex(info)).hex()
+		return token.upper() 
 
 	# -----------------------------------------------------------
 	# decrypt_token()- decrypts given token using AES.MODE_ECB
