@@ -63,7 +63,7 @@ class Bank:
 				self.recv_funds_from_bank()
 				sys.exit()
 			elif option == "3":
-				self.synchronizing_wallet()
+				self.sync_wallets()
 				sys.exit()
 			elif option == "4":
 				self.sending_funds()
@@ -107,6 +107,42 @@ class Bank:
 		token = self.encrypt_token(info)
 		print("Your token: ", token)
 
+	def sync_wallets(self):
+		# Ask for receiver wallet ID 
+		receiver = input("Receiver wallet student id: ")
+		
+		# Create a new wallet based off of that receiver ID
+		wallet_b = Wallet()
+		wallet_b.ID = receiver[-3:]
+		wallet_b.SHA_256(receiver)	
+
+		# Store the newly created wallet into the bank's known wallet array
+		self.wallets.append(wallet_b)
+
+		# Create wallet_a's token (a --> b) & Store that token into wallet b
+		sender = self.check_length(self.wallet_a.ID)
+		receiver = self.check_length(wallet_b.ID)
+		amount = "00000000"
+		counter = "00000000"
+		info = sender + receiver + amount + counter
+		token1 = self.encrypt_token(info)
+		wallet_b.synced_wallets.append(token1) 
+		print("Token a --> b: ", token1)
+		self.decrypt_token(token1)
+
+		# Create wallet_b's token (b --> a) & Store that token into wallet a 
+		sender = self.check_length(wallet_b.ID)
+		receiver = self.check_length(self.wallet_a.ID)
+		amount = "00000000"
+		counter = "00000000"
+		info = sender + receiver + amount + counter
+		token2 = self.encrypt_token(info)
+		self.wallet_a.synced_wallets.append(token2) 
+		print("Token b --> a: ", token2)
+		self.decrypt_token(token2)
+
+		# they now know each other 
+
 	# -----------------------------------------------------------
 	# receiving_funds()- method for sending funds to another wallet 
 	#------------------------------------------------------------
@@ -137,7 +173,7 @@ class Bank:
 	# -----------------------------------------------------------
 	# encrypt_token()- encrypts given token using AES.MODE_ECB
 	#------------------------------------------------------------
-	def encrypt_token(self):
+	def encrypt_token(self, info):
 		cipher = AES.new(bytes.fromhex(self.KBank), AES.MODE_ECB)
 		token = cipher.encrypt(bytes.fromhex(info)).hex()
 		return token.upper() 
@@ -148,7 +184,7 @@ class Bank:
 	def decrypt_token(self,token):
 		print("\n Decrypt token: ", token)
 
-		decipher = AES.new(bytes.fromhex(self.k_bank), AES.MODE_ECB)
+		decipher = AES.new(bytes.fromhex(self.KBank), AES.MODE_ECB)
 		result = decipher.decrypt(bytes.fromhex(token)).hex()
 		print("--> ", result)
 		print("\n")
