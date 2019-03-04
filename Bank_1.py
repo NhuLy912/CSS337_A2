@@ -36,7 +36,7 @@ class Bank:
 		# assignn ID
 		new_wallet.ID = student_id
 		
-		# create and save wallet key 
+		# create and save wallet key  
 		new_wallet.SHA_256(student_id)
 
 		self.wallets.append(new_wallet)
