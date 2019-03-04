@@ -3,9 +3,9 @@ from Crypto.Cipher import AES
 
 class Wallet:
     def __init__(self):
-        self.ID = 0
+        self.ID = ""
         self.balance = 0
-        self.k_wallet = 0
+        self.k_wallet = ""
         self.synced_wallets = []
 
     def SHA_256(self,student_id):
