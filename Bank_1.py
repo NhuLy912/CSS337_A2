@@ -14,6 +14,7 @@ class Bank:
 		self.KBank = "F25D58A0E3E4436EC646B58B1C194C6B505AB1CB6B9DE66C894599222F07B893"
 		self.wallets = []
 		self.wallet_a = None
+		self.wallet_b = None
 		
 	# -----------------------------------------------------------
 	# welcome()- Welcome display 
@@ -112,49 +113,108 @@ class Bank:
 		receiver = input("Receiver wallet student id: ")
 		
 		# Create a new wallet based off of that receiver ID
-		wallet_b = Wallet()
-		wallet_b.ID = receiver[-3:]
-		wallet_b.SHA_256(receiver)	
+		self.wallet_b = Wallet()
+		self.wallet_b.ID = receiver[-3:]
+		self.wallet_b.SHA_256(receiver)	
 
 		# Store the newly created wallet into the bank's known wallet array
-		self.wallets.append(wallet_b)
+		self.wallets.append(self.wallet_b)
 
 		# Create wallet_a's token (a --> b) & Store that token into wallet b
 		sender = self.check_length(self.wallet_a.ID)
-		receiver = self.check_length(wallet_b.ID)
+		receiver = self.check_length(self.wallet_b.ID)
 		amount = "00000000"
 		counter = "00000000"
 		info = sender + receiver + amount + counter
 		token1 = self.encrypt_token(info)
-		wallet_b.synced_wallets.append(token1) 
+
+		# Initialize counter
+		self.wallet_b.synced_wallets[self.wallet_a.ID] = 0
 		print("Token a --> b: ", token1)
 		self.decrypt_token(token1)
 
-		# Create wallet_b's token (b --> a) & Store that token into wallet a 
-		sender = self.check_length(wallet_b.ID)
+		for x in self.wallet_a.synced_wallets:
+			print (x)
+			for y in self.wallet_a.synced_wallets[x]:
+				print (y,':',self.wallet_a.synced_wallets[x][y])
+
+		# Create self.wallet_b's token (b --> a) & Store that token into wallet a 
+		sender = self.check_length(self.wallet_b.ID)
 		receiver = self.check_length(self.wallet_a.ID)
 		amount = "00000000"
 		counter = "00000000"
 		info = sender + receiver + amount + counter
 		token2 = self.encrypt_token(info)
-		self.wallet_a.synced_wallets.append(token2) 
+
+		# Initialize counter
+		self.wallet_a.synced_wallets[self.wallet_b.ID] = 0
 		print("Token b --> a: ", token2)
 		self.decrypt_token(token2)
+		print("b")
+		for a,b in self.wallet_b.synced_wallets.items():
+			print(a, b)
 
-		# they now know each other 
-
+		print("a")
+		for a1, b1 in self.wallet_a.synced_wallets.items():
+			print(a1, b1)
+		
+		self.sending_funds()
 	# -----------------------------------------------------------
 	# receiving_funds()- method for sending funds to another wallet 
 	#------------------------------------------------------------
 	def sending_funds(self):
-		print("Sending funds...")
+		recieving_wallet = input("Pleaes enter the receiving wallet's ID: ")
+		amount_to_send = int(input("How much would you like to send?"))
+		recv_counter = self.wallet_a.synced_wallets[recieving_wallet]	#obtain the counter 
+		self.wallet_a.balance = 100
+
+		# only proceed if sufficient funds
+		if amount_to_send <= int(self.wallet_a.balance):
+			# Generate the token
+			sending_token = self.check_length(self.wallet_a.ID) + self.check_length(recieving_wallet) + self.check_length(str(amount_to_send)) + self.check_length(str(recv_counter))
+			print("sending token: ", sending_token)
+			# Encrypt the token
+			token = self.encrypt_token(sending_token)
+
+			# Update wallet a 
+			self.wallet_a.balance -= amount_to_send
+		
+			# display where the money's going 
+
+			# update B 
+			self.receiving_funds(token)
+
+			# Increment the counter in wallet a's table
+			self.wallet_a.synced_wallets[recieving_wallet] += (recv_counter+1)
+		
+		else: #TODO: Make this operation loop
+			print("Insufficient funds")
 
 	# -----------------------------------------------------------
 	# receiving_funds()- method for receiving funds from another wallet 
 	#------------------------------------------------------------
-	def receiving_funds(self):
-		print("Receiving funds from other...")
+	def receiving_funds(self, token):
+		w_a, w_b, amount1, counter1 = self.decrypt_token(token)
 
+		amount = self.find_amount(amount1)
+		recieving_field = str(self.find_amount(w_b))
+		a_counter_in_token = self.find_amount(counter1)
+		a_counter_in_record = self.wallet_b.synced_wallets[self.wallet_a.ID]
+		
+		# validate that B's ID is in the receiver field
+		# validate that the counter matches the record associate with wallet A in B's table 
+		if (recieving_field == self.wallet_b.ID) and (a_counter_in_token == a_counter_in_record):
+			# update wallet B's balance
+			self.wallet_b.balance += amount
+
+			# increment counter of A
+			self.wallet_b.synced_wallets[self.wallet_a.ID] += (a_counter_in_record+1)
+
+			# Display 
+			print("Updated wallet B's balance: ", self.wallet_b.balance)
+		else:
+			#TODO: make this loop back / handle error 
+			print("come back 2 me")
 	''' Encryption methods ''' 
 
 	# -----------------------------------------------------------

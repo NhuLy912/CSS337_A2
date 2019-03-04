@@ -6,7 +6,7 @@ class Wallet:
         self.ID = ""
         self.balance = 0
         self.k_wallet = ""
-        self.synced_wallets = []
+        self.synced_wallets = {}    #contains key-value pair of ID, COUNTER
 
     def SHA_256(self,student_id):
         self.k_wallet = hashlib.sha256(student_id.encode()).hexdigest()
