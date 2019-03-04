@@ -10,7 +10,7 @@ class Wallet:
 
     def SHA_256(self,student_id):
         self.k_wallet = hashlib.sha256(student_id.encode()).hexdigest()
-        print("Wallet ID: ", student_id)
+        print("Wallet ID: ", self.ID)
         print("Walley Key: ", self.k_wallet)
         
     def add_to_table(self,walletID):

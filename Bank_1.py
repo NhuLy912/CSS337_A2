@@ -11,10 +11,9 @@ from wallet import Wallet
 
 class Bank:
 	def __init__(self):
-		self.KBank = 0
+		self.KBank = "F25D58A0E3E4436EC646B58B1C194C6B505AB1CB6B9DE66C894599222F07B893"
 		self.wallets = []
 		self.wallet_a = None
-		self.wallet_b = None 
 		
 	# -----------------------------------------------------------
 	# welcome()- Welcome display 
@@ -34,18 +33,17 @@ class Bank:
 		new_wallet = Wallet()
 
 		# assignn ID
-		new_wallet.ID = student_id
+
+		new_wallet.ID = student_id[-3:]
 		
 		# create and save wallet key 
 		new_wallet.SHA_256(student_id)
 
 		self.wallets.append(new_wallet)
-		
-		# Check if this is initial sign up, or a second wallet sign up 
-		if(self.wallet_a is None):
-			self.wallet_a = new_wallet
-		else:
-			self.wallet_b = new_wallet
+
+		self.wallet_a = new_wallet
+		sender = self.wallet_a.ID; 
+
 	# -----------------------------------------------------------
 	# option()- option toggler for different functions of the app
 	#------------------------------------------------------------
@@ -53,9 +51,9 @@ class Bank:
 		print("Please choose 1 option:\n\
 		1 - Check Balance\n\
 		2 - Receiving funds from the bank\n\
-		3 - Synchronizing wallet\n\
-		4 - Sending funds\n\
-		5 - Receiving funds\n")
+		3 - Synchronize wallets (must be done before transfer)\n\
+		4 - Send funds to another wallet\n\
+		5 - Receive funds from another wallet\n")
 		while True:
 			option = input("Your choice: ")
 			if option == "1":
@@ -155,9 +153,8 @@ class Bank:
 	#------------------------------------------------------------
 	def decrypt_token(self,token):
 		print("\n Decrypt token: ", token)
-		k_bank = "F25D58A0E3E4436EC646B58B1C194C6B505AB1CB6B9DE66C894599222F07B893"
 
-		decipher = AES.new(bytes.fromhex(k_bank), AES.MODE_ECB)
+		decipher = AES.new(bytes.fromhex(self.k_bank), AES.MODE_ECB)
 		result = decipher.decrypt(bytes.fromhex(token)).hex()
 		print("--> ", result)
 		print("\n")
