@@ -27,14 +27,13 @@ class Bank:
 	# sign_up()- Registers a new wallet, up to 2 
 	#------------------------------------------------------------
 	def sign_up(self):
-		student_id = input("Please enter your student ID: ")
+		student_id = input("Please enter your student ID (7 digits): ")
 		# put input validation for len 3 here 
 		
 		# Create new wallet object 
 		new_wallet = Wallet()
 
 		# assignn ID
-
 		new_wallet.ID = student_id[-3:]
 		
 		# create and save wallet key  
@@ -56,7 +55,7 @@ class Bank:
 		4 - Send funds to another wallet\n\
 		5 - Receive funds from another wallet\n")
 		while True:
-			option = input("Your choice: ")
+			option = input("Please select a menu option: ")
 			if option == "1":
 				self.check_balance()
 				sys.exit()
@@ -66,12 +65,12 @@ class Bank:
 			elif option == "3":
 				self.sync_wallets()
 				sys.exit()
-			elif option == "4":
-				self.sending_funds()
-				sys.exit()
-			elif option == "5":
-				self.receiving_funds()
-				sys.exit()
+			elif option == "4" or option == "5":
+				if self.wallet_b == None:
+					print("Please synchronize wallets first (option 3)")
+				else:
+					self.sending_funds()
+					sys.exit()
 			else:
 				answer = input("Incorrect choice. Do you want to try again. Y(yes)/N(no): ")
 				if answer == "N" or answer == "n":
@@ -81,8 +80,15 @@ class Bank:
 	# check_balance()- returns balance of the given wallet's balance 
 	#------------------------------------------------------------
 	def check_balance(self):
-		print("Checking balance...")
-		print("Your balance is: ", self.wallet_a.balance)
+		wallet_to_check = input("Please enter the 3 digit wallet ID to check balance for: ")
+		if wallet_to_check == self.wallet_a.ID:
+			print("Checking balance for wallet ", self.wallet_a.ID)
+			print("Your balance is: ", self.wallet_a.balance)
+		elif self.wallet_b != None and wallet_to_check == self.wallet_b.ID:
+			print("Checking balance for wallet ", self.wallet_b.ID)
+			print("Your balance is: ", self.wallet_b.balance)
+		else:
+			print("Unrecogized wallet. Unable to complete transaction")
 
 	# -----------------------------------------------------------
 	# recv_funds_from_bank()- accepts EMD value and parses the 
@@ -96,21 +102,11 @@ class Bank:
 		print("Great! Transaction succesful. Your new balance is: ", self.wallet_a.balance)
 
 	# -----------------------------------------------------------
-	# synchronizing_wallet()- method for syncing two wallets 
+	# sync_wallets()- method for syncing two wallets 
 	#------------------------------------------------------------
-	def synchronizing_wallet(self):
-		receiver = input("Receiver wallet id: ")
-		sender = self.check_length(self.wallet_a.ID)
-		receiver = self.check_length(receiver)
-		amount = "00000000"
-		counter = "00000000"
-		info = sender + receiver + amount + counter
-		token = self.encrypt_token(info)
-		print("Your token: ", token)
-
 	def sync_wallets(self):
 		# Ask for receiver wallet ID 
-		receiver = input("Receiver wallet student id: ")
+		receiver = input("Please enter the receiver's student id (7 digits): ")
 		
 		# Create a new wallet based off of that receiver ID
 		self.wallet_b = Wallet()
@@ -163,32 +159,33 @@ class Bank:
 	# receiving_funds()- method for sending funds to another wallet 
 	#------------------------------------------------------------
 	def sending_funds(self):
-		recieving_wallet = input("Pleaes enter the receiving wallet's ID: ")
-		amount_to_send = int(input("How much would you like to send?"))
-		recv_counter = self.wallet_a.synced_wallets[recieving_wallet]	#obtain the counter 
-		self.wallet_a.balance = 100
+		while True:
+			recieving_wallet = input("Please enter the receiving wallet's ID (3 digits): ")
+			amount_to_send = int(input("How much would you like to send?"))
+			recv_counter = self.wallet_a.synced_wallets[recieving_wallet]	#obtain the counter 
+			self.wallet_a.balance = 100
 
-		# only proceed if sufficient funds
-		if amount_to_send <= int(self.wallet_a.balance):
-			# Generate the token
-			sending_token = self.check_length(self.wallet_a.ID) + self.check_length(recieving_wallet) + self.check_length(str(amount_to_send)) + self.check_length(str(recv_counter))
-			print("sending token: ", sending_token)
-			# Encrypt the token
-			token = self.encrypt_token(sending_token)
+			# only proceed if sufficient funds
+			if amount_to_send <= int(self.wallet_a.balance):
+				# Generate the token
+				sending_token = self.check_length(self.wallet_a.ID) + self.check_length(recieving_wallet) + self.check_length(str(amount_to_send)) + self.check_length(str(recv_counter))
+				print("sending token: ", sending_token)
+				# Encrypt the token
+				token = self.encrypt_token(sending_token)
 
-			# Update wallet a 
-			self.wallet_a.balance -= amount_to_send
-		
-			# display where the money's going 
+				# Update wallet a 
+				self.wallet_a.balance -= amount_to_send
+			
+				# display where the money's going 
+				print("Transaction Sent. Wallet A's new balance: ", self.wallet_a.balance)
+				# update B 
+				self.receiving_funds(token)
 
-			# update B 
-			self.receiving_funds(token)
-
-			# Increment the counter in wallet a's table
-			self.wallet_a.synced_wallets[recieving_wallet] += (recv_counter+1)
-		
-		else: #TODO: Make this operation loop
-			print("Insufficient funds")
+				# Increment the counter in wallet a's table
+				self.wallet_a.synced_wallets[recieving_wallet] += (recv_counter+1)
+				break
+			else: 
+				print("Insufficient funds")
 
 	# -----------------------------------------------------------
 	# receiving_funds()- method for receiving funds from another wallet 
@@ -213,8 +210,7 @@ class Bank:
 			# Display 
 			print("Updated wallet B's balance: ", self.wallet_b.balance)
 		else:
-			#TODO: make this loop back / handle error 
-			print("come back 2 me")
+			print("Error in receiving funds. Please verify that the wallet IDs are accurate and are in their respective locations within the token.")
 	''' Encryption methods ''' 
 
 	# -----------------------------------------------------------
