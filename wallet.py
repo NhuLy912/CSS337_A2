@@ -1,3 +1,9 @@
+# -----------------------------------------------------------
+# CONTRIBUTORS:			Nhu (Sherry) Ly, Ye Eun Chae
+# DATE:					03/25/2019
+# COURSE:				css 337
+# DESCRIPTION:			Wallet Application  
+#------------------------------------------------------------
 import hashlib
 from Crypto.Cipher import AES
 
