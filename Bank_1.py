@@ -29,7 +29,14 @@ class Bank:
 	def sign_up(self):
 		student_id = input("Please enter your student ID (7 digits): ")
 		# put input validation for len 3 here 
-		
+		# put input validation for len 7 here 
+	    	while True:
+	      		student_id = input("Please enter your student ID (7 digits): ")
+	      		if len(student_id) == 7 and student_id.isdigit():
+				break
+	      		else:
+				continue
+				
 		# Create new wallet object 
 		new_wallet = Wallet()
 
@@ -106,7 +113,12 @@ class Bank:
 	#------------------------------------------------------------
 	def sync_wallets(self):
 		# Ask for receiver wallet ID 
-		receiver = input("Please enter the receiver's student id (7 digits): ")
+		while True:
+      			receiver = input("Please enter the receiver's student id (7 digits): ")
+      			if len(receiver) == 7 and receiver.isdigit():
+        			break
+      			else:
+        			continue
 		
 		# Create a new wallet based off of that receiver ID
 		self.wallet_b = Wallet()
