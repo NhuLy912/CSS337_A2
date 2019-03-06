@@ -27,14 +27,14 @@ class Bank:
 	# sign_up()- Registers a new wallet, up to 2 
 	#------------------------------------------------------------
 	def sign_up(self):
-		student_id = input("Please enter your student ID (7 digits): ")
+		# student_id = input("Please enter your student ID (7 digits): ")
 		# put input validation for len 3 here 
 		# put input validation for len 7 here 
-	    	while True:
-	      		student_id = input("Please enter your student ID (7 digits): ")
-	      		if len(student_id) == 7 and student_id.isdigit():
+		while True:
+			student_id = input("Please enter your student ID (7 digits): ")
+			if len(student_id) == 7 and student_id.isdigit():
 				break
-	      		else:
+			else:
 				continue
 				
 		# Create new wallet object 
@@ -55,12 +55,13 @@ class Bank:
 	# option()- option toggler for different functions of the app
 	#------------------------------------------------------------
 	def option(self):
-		print("Please choose 1 option:\n\
+		print("Bank Operation Options:\n\
 		1 - Check Balance\n\
 		2 - Receiving funds from the bank\n\
 		3 - Synchronize wallets (must be done before transfer)\n\
 		4 - Send funds to another wallet\n\
-		5 - Receive funds from another wallet\n")
+		5 - Receive funds from another wallet\n\
+		6 - Exit ")
 		while True:
 			option = input("Please select a menu option: ")
 			if option == "1":
@@ -78,6 +79,9 @@ class Bank:
 				else:
 					self.sending_funds()
 					sys.exit()
+			elif option == "6":
+				print("Good bye!")
+				sys.exit()
 			else:
 				answer = input("Incorrect choice. Do you want to try again. Y(yes)/N(no): ")
 				if answer == "N" or answer == "n":
@@ -96,7 +100,7 @@ class Bank:
 			print("Your balance is: ", self.wallet_b.balance)
 		else:
 			print("Unrecogized wallet. Unable to complete transaction")
-
+		self.option()
 	# -----------------------------------------------------------
 	# recv_funds_from_bank()- accepts EMD value and parses the 
 	#	dollar amount from the EMD and updates the balance 
@@ -107,7 +111,7 @@ class Bank:
 		amount = self.find_amount(amount_unparsed)	# parse to grab the last 3 charaters 
 		self.wallet_a.balance += amount
 		print("Great! Transaction succesful. Your new balance is: ", self.wallet_a.balance)
-
+		self.option()
 	# -----------------------------------------------------------
 	# sync_wallets()- method for syncing two wallets 
 	#------------------------------------------------------------
@@ -166,7 +170,8 @@ class Bank:
 		for a1, b1 in self.wallet_a.synced_wallets.items():
 			print(a1, b1)
 		
-		self.sending_funds()
+		# self.sending_funds()
+		self.option()
 	# -----------------------------------------------------------
 	# receiving_funds()- method for sending funds to another wallet 
 	#------------------------------------------------------------
@@ -198,6 +203,7 @@ class Bank:
 				break
 			else: 
 				print("Insufficient funds")
+		
 
 	# -----------------------------------------------------------
 	# receiving_funds()- method for receiving funds from another wallet 
@@ -223,6 +229,7 @@ class Bank:
 			print("Updated wallet B's balance: ", self.wallet_b.balance)
 		else:
 			print("Error in receiving funds. Please verify that the wallet IDs are accurate and are in their respective locations within the token.")
+		self.option()
 	''' Encryption methods ''' 
 
 	# -----------------------------------------------------------
