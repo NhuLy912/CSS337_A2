@@ -170,7 +170,12 @@ class Bank:
 	#------------------------------------------------------------
 	def sending_funds(self):
 		while True:
-			recieving_wallet = input("Please enter the receiving wallet's ID (3 digits): ")
+			while True:
+				recieving_wallet = input("Please enter the receiving wallet's ID (3 digits): ")
+				if len(recieving_wallet) == 3 and recieving_wallet.isdigit():
+					break
+				else:
+					continue
 			amount_to_send = int(input("How much would you like to send?"))
 			recv_counter = self.wallet_a.synced_wallets[recieving_wallet]	#obtain the counter 
 			self.wallet_a.balance = 100
