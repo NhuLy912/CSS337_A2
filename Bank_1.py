@@ -161,14 +161,7 @@ class Bank:
 		# Initialize counter
 		self.wallet_a.synced_wallets[self.wallet_b.ID] = 0
 		print("Token b --> a: ", token2)
-		self.decrypt_token(token2)
-		print("b")
-		for a,b in self.wallet_b.synced_wallets.items():
-			print(a, b)
-
-		print("a")
-		for a1, b1 in self.wallet_a.synced_wallets.items():
-			print(a1, b1)
+		self.decrypt_token(token2) 
 		
 		# self.sending_funds()
 		self.option()
@@ -257,20 +250,16 @@ class Bank:
 	# decrypt_token()- decrypts given token using AES.MODE_ECB
 	#------------------------------------------------------------
 	def decrypt_token(self,token):
-		print("\n Decrypt token: ", token)
-
 		decipher = AES.new(bytes.fromhex(self.KBank), AES.MODE_ECB)
 		result = decipher.decrypt(bytes.fromhex(token)).hex()
-		print("--> ", result)
-		print("\n")
 		w_a = result[:8]
 		w_b = result[9:16]
 		amount1 = result[17:24]
 		counter1 = result[25:] 
-		print("wallet a: ", w_a, " type: ", type(w_a))
-		print("wallet b: ", w_b, " type: ", type(w_b))
-		print("amount: ", amount1, " type: ", type(amount1))
-		print("counter: ", counter1, " type: ", type(counter1))
+		print("wallet a: ", w_a)
+		print("wallet b: ", w_b)
+		print("amount: ", amount1)
+		print("counter: ", counter1)
 		print("\n")
 		return w_a, w_b, amount1, counter1
 
